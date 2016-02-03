@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+*~
+
+.idea/
+
+eval/data/
+eval/ner/dbg*
+eval/ner/profile*
+
+*.sh
+
+*.zip
+
+*.R
