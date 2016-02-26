@@ -2,9 +2,9 @@ import sys
 
 import numpy as np
 
-from eval.ner.lxmls.readers.Conll2002NerCorpus import Conll2002NerCorpus, ned_train, ned_dev, ned_test, ned_test_parsed, \
+from eval.ner.readers.Conll2002NerCorpus import Conll2002NerCorpus, ned_train, ned_dev, ned_test, ned_test_parsed, \
     ned_dev_parsed, ned_train_parsed, ned_dev_parsed_files_path, ned_test_parsed_files_path, ned_train_parsed_files_path
-from eval.ner.lxmls.readers.Conll2003NerCorpus import Conll2003NerCorpus, eng_dev, eng_train, eng_test, muc_test, \
+from eval.ner.readers.Conll2003NerCorpus import Conll2003NerCorpus, eng_dev, eng_train, eng_test, muc_test, \
     muc_test_parsed, eng_test_parsed, eng_dev_parsed, eng_train_parsed
 from hmm import HMM
 from hmrtm import HMRTM
@@ -99,10 +99,10 @@ class PrepareHmmRep():
 
 
     def prepare_seqs_nl(self, decoding="viterbi"):
-        params_fixed = (np.load("{}ip.npy".format(self.path)),
-                        np.load("{}tp.npy".format(self.path)),
-                        np.load("{}fp.npy".format(self.path)),
-                        np.load("{}ep.npy".format(self.path)))
+        params_fixed = (np.load("{}/ip.npy".format(self.path)),
+                        np.load("{}/tp.npy".format(self.path)),
+                        np.load("{}/fp.npy".format(self.path)),
+                        np.load("{}/ep.npy".format(self.path)))
 
         h = HMM(self.n_states, self.n_obs, params=params_fixed, writeout=False, dirname=self.path)
 
@@ -137,10 +137,10 @@ class PrepareHmmRep():
         return train_seq, dev_seq, test_seq
 
     def prepare_seqs_en(self, decoding="viterbi"):
-        params_fixed = (np.load("{}ip.npy".format(self.path)),
-                        np.load("{}tp.npy".format(self.path)),
-                        np.load("{}fp.npy".format(self.path)),
-                        np.load("{}ep.npy".format(self.path)))
+        params_fixed = (np.load("{}/ip.npy".format(self.path)),
+                        np.load("{}/tp.npy".format(self.path)),
+                        np.load("{}/fp.npy".format(self.path)),
+                        np.load("{}/ep.npy".format(self.path)))
 
         h = HMM(self.n_states, self.n_obs, params=params_fixed, writeout=False, dirname=self.path)
 

@@ -1,6 +1,7 @@
 import numpy as np
-import lxmls.sequences.sequence_classifier as sc
-import pdb
+
+import eval.ner.sequences.sequence_classifier as sc
+
 
 class DiscriminativeSequenceClassifier(sc.SequenceClassifier):
 

@@ -1,20 +1,19 @@
 import sys
 
-from eval.ner.lxmls.readers.Conll2002NerCorpus import Conll2002NerCorpus
+from eval.ner.readers.Conll2002NerCorpus import Conll2002NerCorpus
 from readers.conll_corpus import ConllCorpus
 
 
-data_dir = ""
+data_dir = "eval/ner/data/"
 
 eng_train = "{}eng.train".format(data_dir)
 eng_train_parsed = "{}eng.train.parsed".format(data_dir)
 eng_dev = "{}eng.testa".format(data_dir)
 eng_dev_parsed = "{}eng.testa.parsed".format(data_dir)
-# eng_dbg = "{}eng.dbg".format(data_dir)
 eng_test = "{}eng.testb".format(data_dir)
 eng_test_parsed = "{}eng.testb.parsed".format(data_dir)
-muc_test = ""
-muc_test_parsed = ""
+muc_test = "{}MUC7.NE.formalrun.sentences.columns.gold".format(data_dir)
+muc_test_parsed = "{}MUC7.NE.formalrun.sentences.columns.gold.parsed".format(data_dir)
 
 
 class Conll2003NerCorpus(Conll2002NerCorpus):

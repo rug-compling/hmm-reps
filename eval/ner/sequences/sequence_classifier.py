@@ -1,6 +1,6 @@
 import numpy as np
 import eval.ner.sequences.sequence_classification_decoder as scd
-import pdb
+
 
 class SequenceClassifier():
     ''' Implements an abstract sequence classifier.'''

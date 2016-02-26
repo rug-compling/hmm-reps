@@ -2,7 +2,7 @@ from collections import defaultdict
 import argparse
 import logging
 
-from eval.ner.lxmls.readers.ConllOutput import read_sequence_list_conll, ConllOutput
+from eval.ner.readers.ConllOutput import read_sequence_list_conll, ConllOutput
 
 
 def iter_dataset(dataset):

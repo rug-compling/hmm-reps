@@ -1,7 +1,7 @@
 from sequences.label_dictionary import LabelDictionary
 from sequences.sequence_list import SequenceList
 
-data_dir = ""
+data_dir = "eval/ner/data/"
 
 ned_train = "{}ned.train".format(data_dir)
 ned_dev = "{}ned.testa".format(data_dir)

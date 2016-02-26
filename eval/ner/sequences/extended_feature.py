@@ -1,12 +1,13 @@
 import sys
 import numpy as np
-from lxmls.sequences.id_feature import IDFeatures
-from lxmls.readers.brown import prepare_cluster_map
+
 
 #######################
 #### Feature Class
 ### Extracts features from a labeled corpus
 #######################
+from eval.ner.readers.brown import prepare_cluster_map
+from eval.ner.sequences.id_feature import IDFeatures
 
 
 class ExtendedFeatures(IDFeatures):

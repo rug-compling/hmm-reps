@@ -1,8 +1,8 @@
 import sys
 
-from eval.ner.lxmls.readers.Conll2002NerCorpus import Conll2002NerCorpus, ned_train, ned_dev, ned_test
-from eval.ner.lxmls.readers.Conll2003NerCorpus import Conll2003NerCorpus, eng_train, eng_dev, eng_test, muc_test
-from eval.ner.lxmls.readers.word2vec import load_embed
+from eval.ner.readers.Conll2002NerCorpus import Conll2002NerCorpus, ned_train, ned_dev, ned_test
+from eval.ner.readers.Conll2003NerCorpus import Conll2003NerCorpus, eng_train, eng_dev, eng_test, muc_test
+from eval.ner.readers.word2vec import load_embed
 from readers.vocab import read_vocab
 from sequences.label_dictionary import LabelDictionary
 

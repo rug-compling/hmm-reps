@@ -2,7 +2,7 @@ import logging
 import shutil
 import sys
 
-from eval.ner.lxmls.readers.brown import prepare_cluster_to_word_map as brown_map
+from eval.ner.readers.brown import prepare_cluster_to_word_map as brown_map
 import inference.hmm_inference as infer
 from inference.hmm_splitmerge import HMMsplitmerge
 from output.emission_prob import get_best_clusterids

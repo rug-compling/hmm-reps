@@ -2,8 +2,7 @@ import logging
 
 import numpy as np
 
-# import sequences.discriminative_sequence_classifier as dsc
-import eval.ner.lxmls.sequences.discriminative_sequence_classifier as dsc
+import eval.ner.sequences.discriminative_sequence_classifier as dsc
 
 
 class StructuredPerceptron(dsc.DiscriminativeSequenceClassifier):

@@ -3,7 +3,7 @@ import sys
 import numpy as np
 from scipy.linalg import norm
 from scipy.stats import variation
-from eval.ner.lxmls.readers.word2vec import write_embed
+from eval.ner.readers.word2vec import write_embed
 
 from readers.conll_corpus import ConllCorpus
 from readers.text_corpus import TextCorpus
@@ -59,7 +59,7 @@ def get_best_clusterids(emission_matrix, i, n, prob_thresh=0.00001):
 
 def posttype_txt(posttypes, vocab_f, threedim, vocab_r):
     """
-    produce format as in word embeddings (lxmls.readers.word2vec.py)
+    produce format as in word embeddings (readers.word2vec.py)
     :param posttypes: loaded posttype.npy file
     :param vocab_f: vocabulary of the training text used for obtaining posttype.npy
     """

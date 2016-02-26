@@ -1,6 +1,5 @@
-import numpy as np
-from lxmls.sequences.log_domain import *
-import pdb
+from eval.ner.sequences.log_domain import *
+
 
 class SequenceClassificationDecoder():
     ''' Implements a sequence classification decoder.'''

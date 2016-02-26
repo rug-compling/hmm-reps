@@ -61,7 +61,8 @@ python3.3 run.py --help
 Sequential Hidden Markov model:
 
 ```sh
-python3.3 run.py --dataset data/sample.en --desired_n_states 60 --max_iter 2 --n_proc 1 --approx
+python3.3 readers/corpus_normalize.py --dataset data/sample.en --output data/sample.en.unk --freq_thresh 1
+python3.3 run.py --dataset data/sample.en.unk --desired_n_states 60 --max_iter 2 --n_proc 1 --approx
 ```
 
 This will create an output directory `hmm_...`. 

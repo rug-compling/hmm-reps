@@ -8,17 +8,17 @@ from sequences.sequence_list_label import SequenceListLabel
 from trees.tree import Tree
 
 
-data_dir = ""
+data_dir = "eval/ner/data/"
 
-ned_train = "{}ned.train.lemma".format(data_dir)
-ned_train_parsed = "{}ned.train.parsed".format(data_dir)
-ned_train_parsed_files_path = "{}ned.train.xml/".format(data_dir)
-ned_dev = "{}ned.testa.lemma".format(data_dir)
-ned_dev_parsed = "{}ned.testa.parsed".format(data_dir)
-ned_dev_parsed_files_path = "{}ned.testa.xml/".format(data_dir)
-ned_test = "{}ned.testb.lemma".format(data_dir)
-ned_test_parsed = "{}ned.testb.parsed".format(data_dir)
-ned_test_parsed_files_path = "{}ned.testb.xml/".format(data_dir)
+ned_train = "{}/ned.train.lemma".format(data_dir)
+ned_train_parsed = "{}/ned.train.parsed".format(data_dir)
+ned_train_parsed_files_path = "{}/ned.train.xml/".format(data_dir)
+ned_dev = "{}/ned.testa.lemma".format(data_dir)
+ned_dev_parsed = "{}/ned.testa.parsed".format(data_dir)
+ned_dev_parsed_files_path = "{}/ned.testa.xml/".format(data_dir)
+ned_test = "{}/ned.testb.lemma".format(data_dir)
+ned_test_parsed = "{}/ned.testb.parsed".format(data_dir)
+ned_test_parsed_files_path = "{}/ned.testb.xml/".format(data_dir)
 
 
 def get_words_from_tree(tree, trees_vocab):

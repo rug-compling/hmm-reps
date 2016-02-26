@@ -8,17 +8,11 @@ __author__ = 'sim'
 class TextCorpus:
     def __init__(self, corpus_file, minfreq=0, howbig=10000):
         """
-
         :param minfreq: minimum frequency of a word in order to be taken into account
         :param howbig: number of sentences to take into account
         """
-        # self.corpus_file = "/home/p262594/Datasets/SONAR/SONAR_random4000000.roots.1M"
-        #self.corpus_file = "/home/p262594/Datasets/SONAR/SONAR_random4000000.roots.1M.norm.unk1"
-        #self.corpus_file = "/home/p262594/Datasets/SONAR/{}".format(corpus_file)
-        #self.corpus_file = "/home/p262594/Datasets/PTB_conll/{}".format(corpus_file)
-        #self.corpus_file = "/home/p262594/Datasets/bllip_87_89_wsj/{}".format(corpus_file)
         self.corpus_file = corpus_file
-        self.vocab_file = "{}.vocab{}".format(self.corpus_file, howbig)  #file of form: w\tf\n
+        self.vocab_file = "{}.vocab".format(self.corpus_file)  # file of form: w\tf\n
 
         self.minfreq = minfreq
         self.howbig = howbig

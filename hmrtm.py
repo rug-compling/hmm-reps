@@ -3,7 +3,7 @@ import sys
 
 import numpy as np
 
-from eval.ner.lxmls.readers.brown import prepare_cluster_to_word_map as brown_map
+from eval.ner.readers.brown import prepare_cluster_to_word_map as brown_map
 from hmtm import HMTM
 from inference.sum_product import SumProduct
 
