@@ -49,15 +49,14 @@ The three main classes define the type of architecture that can be used:
 - [hmtm.py](hmtm.py) for Hidden Markov tree models
 - [hmrtm.py](hmrtm.py) for Hidden Markov tree models with syntactic relations (functions)
 
-Models can be trained by invoking `run.py`. Use `--tree` to train a Hidden Markov tree model, and `--rel` to train a Hidden Markov tree model with syntactic relations.
-A full list of options can be found by running:
+Models can be trained by invoking `run.py`. Use `--tree` to train a Hidden Markov tree model, and `--rel` to train a Hidden Markov tree model with syntactic relations. A full list of options can be found by running:
 
 ```sh
 python3.3 run.py --help
 ```
 
 ### Example runs
-First prepare the data that you plan to use. This will replace unfrequent tokens with \*unk\*.
+First prepare the data that you plan to use. This will replace unfrequent tokens with \*unk\*:
 
 ```sh
 python3.3 readers/corpus_normalize.py --dataset data/sample.en --output $DATASET --freq_thresh 1
@@ -98,13 +97,13 @@ python3.3 run.py --rel --dataset $DATASET_TREE --desired_n_states 60 --max_iter 
 
 ### Evaluating the representations
 
+To carry out NER evaluation on the Conll2003 datasets for English:
+
 ```sh
 python3.3 eng_ner_run.py -d posterior -rep hmm_.../ -o out --n_epochs 2
 ```
 
-This runs an averaged structured perceptron, an adaptation of LXMLS's implementation, for 2 epochs (more needed in practice). The training time is about 1 minute per epoch.
- Note that prior to training the perceptron, word representations are first inferred or decoded, which takes a couple of minutes as well.
- If you choose the "posterior_cont" and "posterior_cont_type" decoding methods, please have in mind that they are very memory intensive.
+This runs an averaged structured perceptron, an adaptation of LXMLS's implementation, for 2 epochs (more needed in practice). The training time is about 1 minute per epoch. Note that prior to training the perceptron, word representations are first inferred or decoded, which takes a couple of minutes as well. We choose here `posterior` (for posterior decoding) that produces comparable results to Viterbi. If you choose the `posterior_cont` and `posterior_cont_type` decoding methods, please have in mind that they are very memory intensive.
 
 See the scripts under [output](output/) for model introspection utilities.
 
