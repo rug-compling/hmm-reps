@@ -33,7 +33,7 @@ class Conll2003NerCorpus(Conll2002NerCorpus):
                 yield inst
 
         if self.use_wordrep_tree:
-            if file_parsed is None or files_parsed_path is None:
+            if file_parsed is None: #or files_parsed_path is None:
                 sys.exit("Missing parsed file.")
 
         contents = open(file, encoding="ascii")

@@ -39,11 +39,10 @@ def read_params_from_path(path):
 class PrepareHmmRep():
     """
     Applying hmm-based representations to the evaluation dataset. This includes decoding.
-
     """
 
     def __init__(self, path, lang, decoding=None, use_wordrep_tree=False, use_wordrep_rel=False, eval_spec_rel=False,
-                 logger=None, ignore_rel=None, lr=False):
+                 logger=None, ignore_rel=None, lr=False, use_muc=False):
 
         self.path = path
         self.lang = lang
@@ -51,7 +50,8 @@ class PrepareHmmRep():
         self.use_wordrep_tree = use_wordrep_tree
         self.use_wordrep_rel = use_wordrep_rel
         self.eval_spec_rel = eval_spec_rel
-        if self.decoding == None:
+        self.use_muc = use_muc
+        if self.decoding is None:
             print("Decoding method not specified.")
             if self.use_wordrep_tree or self.use_wordrep_rel:
                 self.decoding = "max-product"
@@ -97,7 +97,6 @@ class PrepareHmmRep():
 
         self.dataset = None
 
-
     def prepare_seqs_nl(self, decoding="viterbi"):
         params_fixed = (np.load("{}/ip.npy".format(self.path)),
                         np.load("{}/tp.npy".format(self.path)),
@@ -127,7 +126,7 @@ class PrepareHmmRep():
             print("Decoder not defined, using Viterbi.")
             decoder = h.viterbi_decode_corpus
 
-        print("Decoding word representations on train.")
+        print("Decoding word representations on train. This may take a while...")
         type_decoder(train_seq, self.dataset, self.logger) if type_decoder is not None else decoder(train_seq)
         print("Decoding word representations on dev.")
         type_decoder(dev_seq, self.dataset, self.logger) if type_decoder is not None else decoder(dev_seq)
@@ -149,7 +148,7 @@ class PrepareHmmRep():
         train_seq = self.ner_corpus.read_sequence_list_conll(eng_train)
         dev_seq = self.ner_corpus.read_sequence_list_conll(eng_dev)
         test_seq = self.ner_corpus.read_sequence_list_conll(eng_test)
-        muc_seq = self.ner_corpus.read_sequence_list_conll(muc_test)
+        muc_seq = self.ner_corpus.read_sequence_list_conll(muc_test) if self.use_muc else None
 
         decoder = None
         type_decoder = None
@@ -167,14 +166,15 @@ class PrepareHmmRep():
             print("Decoder not defined correctly, using Viterbi.")
             decoder = h.viterbi_decode_corpus
 
-        print("Decoding word representations on train.")
+        print("Decoding word representations on train. This may take a while...")
         type_decoder(train_seq, self.dataset, self.logger) if type_decoder is not None else decoder(train_seq)
         print("Decoding word representations on dev.")
         type_decoder(dev_seq, self.dataset, self.logger) if type_decoder is not None else decoder(dev_seq)
         print("Decoding word representations on test.")
         type_decoder(test_seq, self.dataset, self.logger) if type_decoder is not None else decoder(test_seq)
-        print("Decoding word representations on MUC.")
-        type_decoder(muc_seq, self.dataset, self.logger) if type_decoder is not None else decoder(muc_seq)
+        if self.use_muc:
+            print("Decoding word representations on MUC.")
+            type_decoder(muc_seq, self.dataset, self.logger) if type_decoder is not None else decoder(muc_seq)
 
         return train_seq, dev_seq, test_seq, muc_seq
 
@@ -203,8 +203,8 @@ class PrepareHmmRep():
         type_decoder = None
         if decoding == "max-product":
             decoder = h.max_product_decode_corpus
-        #elif decoding == "max_emission":
-        #    decoder = h.max_emission_decode_corpus
+        # elif decoding == "max_emission":
+        # decoder = h.max_emission_decode_corpus
         elif decoding == "posterior":
             decoder = h.posterior_decode_corpus
         elif decoding == "posterior_cont":
@@ -216,7 +216,7 @@ class PrepareHmmRep():
             decoder = h.max_product_decode_corpus
 
         self.logger.debug("Decoding.")
-        print("Decoding word representations on train.")
+        print("Decoding word representations on train. This may take a while...")
         type_decoder(train_seq, self.dataset, self.logger) if type_decoder is not None else decoder(train_seq,
                                                                                                     self.ignore_rel)
         print("Decoding word representations on dev.")
@@ -242,12 +242,12 @@ class PrepareHmmRep():
 
         self.logger.debug("Reading ner data from self.ner_corpus")
         self.ner_corpus = Conll2003NerCorpus(self.dataset.x_dict, eval_spec_rel=self.eval_spec_rel, dirname=self.path,
-                                             lr=lr)
+                                             lr=lr, use_wordrep_tree=True)
 
         train_seq = self.ner_corpus.read_sequence_list_conll(eng_train, eng_train_parsed)
         dev_seq = self.ner_corpus.read_sequence_list_conll(eng_dev, eng_dev_parsed)
         test_seq = self.ner_corpus.read_sequence_list_conll(eng_test, eng_test_parsed)
-        muc_seq = self.ner_corpus.read_sequence_list_conll(muc_test, muc_test_parsed)
+        muc_seq = self.ner_corpus.read_sequence_list_conll(muc_test, muc_test_parsed) if self.use_muc else None
 
         # return train_seq, dev_seq, test_seq
         decoder = None
@@ -264,7 +264,7 @@ class PrepareHmmRep():
             print("Decoder not defined, using Max-product message passing.")
             decoder = h.max_product_decode_corpus
 
-        print("Decoding word representations on train.")
+        print("Decoding word representations on train. This may take a while...")
         type_decoder(train_seq, self.dataset, self.logger) if type_decoder is not None else decoder(train_seq,
                                                                                                     self.ignore_rel)
         print("Decoding word representations on dev.")
@@ -273,12 +273,12 @@ class PrepareHmmRep():
         print("Decoding word representations on test.")
         type_decoder(test_seq, self.dataset, self.logger) if type_decoder is not None else decoder(test_seq,
                                                                                                    self.ignore_rel)
-        print("Decoding word representations on MUC.")
-        type_decoder(muc_seq, self.dataset, self.logger) if type_decoder is not None else decoder(muc_seq,
+        if self.use_muc:
+            print("Decoding word representations on MUC.")
+            type_decoder(muc_seq, self.dataset, self.logger) if type_decoder is not None else decoder(muc_seq,
                                                                                                   self.ignore_rel)
 
         return train_seq, dev_seq, test_seq, muc_seq
-        #return test_seq
 
 
 class PrepareHmmRepDbg():
@@ -288,7 +288,7 @@ class PrepareHmmRepDbg():
         self.lang = lang
         self.decoding = decoding
         self.use_wordrep_tree = use_wordrep_tree
-        if self.decoding == None:
+        if self.decoding is None:
             print("Decoding method not specified.")
             if self.use_wordrep_tree:
                 self.decoding = "max-product"
@@ -366,8 +366,8 @@ class PrepareHmmRepDbg():
             print("Decoder not defined, using Viterbi.")
             decoder = h.viterbi_decode_corpus
 
-        #print("Decoding word representations on train.")
-        #decoder(train_seq)
+        # print("Decoding word representations on train.")
+        # decoder(train_seq)
         print("Decoding word representations on dev.")
         decoder(dev_seq)
         #print("Decoding word representations on test.")
@@ -388,8 +388,8 @@ class PrepareHmmRepDbg():
 
         # train_seq = self.ner_corpus.read_sequence_list_conll(eng_train)
         dev_seq = self.ner_corpus.read_sequence_list_conll(eng_dev)
-        #test_seq = self.ner_corpus.read_sequence_list_conll(eng_test)
-        #muc_seq = self.ner_corpus.read_sequence_list_conll(muc_test)
+        # test_seq = self.ner_corpus.read_sequence_list_conll(eng_test)
+        # muc_seq = self.ner_corpus.read_sequence_list_conll(muc_test)
 
 
         if decoding == "viterbi":
@@ -433,8 +433,8 @@ class PrepareHmmRepDbg():
 
         # train_seq = self.ner_corpus.read_sequence_list_conll(eng_train, eng_train_parsed)
         dev_seq = self.ner_corpus.read_sequence_list_conll(eng_dev, eng_dev_parsed)
-        #    test_seq = self.ner_corpus.read_sequence_list_conll(eng_test, eng_test_parsed)
-        #    muc_seq = self.ner_corpus.read_sequence_list_conll(muc_test, muc_test_parsed)
+        # test_seq = self.ner_corpus.read_sequence_list_conll(eng_test, eng_test_parsed)
+        # muc_seq = self.ner_corpus.read_sequence_list_conll(muc_test, muc_test_parsed)
 
         #return train_seq, dev_seq, test_seq
         decoder = None

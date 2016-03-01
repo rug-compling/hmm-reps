@@ -12,13 +12,14 @@ class PrepareEmbedRep():
     Applying word embeddings to the evaluation dataset.
     """
 
-    def __init__(self, embed, embed_v, lang, use_wordrep_tree=False, logger=None):
+    def __init__(self, embed, embed_v, lang, use_wordrep_tree=False, logger=None, use_muc=False):
 
         self.embeddings = load_embed(embed, embed_v)
         self.lang = lang
         self.use_wordrep_tree = use_wordrep_tree
         self.logger = logger
         self.ner_corpus = None
+        self.use_muc = use_muc
 
         if not self.use_wordrep_tree:
             if self.lang == "nl":
@@ -49,12 +50,13 @@ class PrepareEmbedRep():
         train_seq = self.ner_corpus.read_sequence_list_conll(eng_train)
         dev_seq = self.ner_corpus.read_sequence_list_conll(eng_dev)
         test_seq = self.ner_corpus.read_sequence_list_conll(eng_test)
-        muc_seq = self.ner_corpus.read_sequence_list_conll(muc_test)
+        muc_seq = self.ner_corpus.read_sequence_list_conll(muc_test) if self.use_muc else None
 
         mapper_corpus(train_seq, self.embeddings)
         mapper_corpus(dev_seq, self.embeddings)
         mapper_corpus(test_seq, self.embeddings)
-        mapper_corpus(muc_seq, self.embeddings)
+        if self.use_muc:
+            mapper_corpus(muc_seq, self.embeddings)
 
         return train_seq, dev_seq, test_seq, muc_seq
 

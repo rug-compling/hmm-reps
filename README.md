@@ -57,38 +57,56 @@ python3.3 run.py --help
 ```
 
 ### Example runs
-
-Sequential Hidden Markov model:
+First prepare the data that you plan to use. This will replace unfrequent tokens with \*unk\*.
 
 ```sh
-python3.3 readers/corpus_normalize.py --dataset data/sample.en --output data/sample.en.unk --freq_thresh 1
-python3.3 run.py --dataset data/sample.en.unk --desired_n_states 60 --max_iter 2 --n_proc 1 --approx
+python3.3 readers/corpus_normalize.py --dataset data/sample.en --output $DATASET --freq_thresh 1
 ```
 
-This will create an output directory `hmm_...`. 
+Then, to train a sequential Hidden Markov model:
+
+```sh
+python3.3 run.py --dataset $DATASET --desired_n_states 60 --max_iter 2 --n_proc 1 --approx
+```
+
+This will create an output directory starting with `hmm_...`. 
 
 The following configuration will train the same model, but with the splitting procedure and Brown initialization:
 
 ```sh
-python3.3 run.py --dataset data/sample.en --start_n_states 30 --desired_n_states 60 -brown sample.en.64.paths --max_iter 2 --n_proc 1 --approx
+python3.3 run.py --dataset $DATASET --start_n_states 30 --desired_n_states 60 -brown sample.en.64.paths --max_iter 2 --n_proc 1 --approx
 ```
 
-
-To train a Hidden Markov tree model:
+To train a tree model, again start by normalizing the parsed data with \*unk\*:
 
 ```sh
-python3.3 run.py --tree --dataset data/sample.en.conll --start_n_states 60 --desired_n_states 128 
+python3.3 corpus_normalize.py --dataset data/sample.en.conll --output $DATASET_TREE --freq_thresh 1 --conll
+```
+
+Then to train a Hidden Markov tree model:
+
+```sh
+python3.3 run.py --tree --dataset $DATASET_TREE --start_n_states 30 --desired_n_states 60 
  --max_iter 2 --n_proc 1 --approx
 ```
 
 To train a Hidden Markov tree model with syntactic relations:
 
 ```sh
-python3.3 run.py --rel --dataset data/sample.en.conll --desired_n_states 60 --max_iter 2 --n_proc 1 --approx
+python3.3 run.py --rel --dataset $DATASET_TREE --desired_n_states 60 --max_iter 2 --n_proc 1 --approx
 ```
 
 ### Evaluating the representations
-See the scripts under [output](output/) (qualitative) and under [eval](eval/) (named entity recognition).
+
+```sh
+python3.3 eng_ner_run.py -d posterior -rep hmm_.../ -o out --n_epochs 2
+```
+
+This runs an averaged structured perceptron, an adaptation of LXMLS's implementation, for 2 epochs (more needed in practice). The training time is about 1 minute per epoch.
+ Note that prior to training the perceptron, word representations are first inferred or decoded, which takes a couple of minutes as well.
+ If you choose the "posterior_cont" and "posterior_cont_type" decoding methods, please have in mind that they are very memory intensive.
+
+See the scripts under [output](output/) for model introspection utilities.
 
 ##Requirements
 - Python3.3 or higher

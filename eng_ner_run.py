@@ -24,7 +24,9 @@ def setup_logging(dirname, level):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-o", "--output_dir", required=True, help="output directory, e.g. ../data/Conll2002/data/output/I20")
+    parser.add_argument("-o", "--output_dir", required=True,
+                        help="output directory, \
+                        e.g. ../data/Conll2002/data/output/I20")
     parser.add_argument("-rep", "--rep_path", help="directory containing (hmm) word representations files")
     parser.add_argument("-d", "--decoding",
                         choices=["viterbi", "max-emission", "max-product", "posterior", "posterior_cont",
@@ -34,9 +36,14 @@ if __name__ == "__main__":
     parser.add_argument("--rel_spec", action='store_true', default=False,
                         help="if wordreps are based on specific (syntactic) relations")
     parser.add_argument("--ignore_rel",
-                        help="dependency relation name to ignore when decoding. Makes sense only together with rel_spec")
+                        help="dependency relation name to ignore when decoding. \
+                        Makes sense only together with rel_spec")
     parser.add_argument("--embed", help="path to file with word embeddings")
     parser.add_argument("--embed_v", help="path to vocabulary file of the text used for inducing word embeddings")
+    parser.add_argument("--n_epochs", type=int, default=20)
+    parser.add_argument("--use_muc", action='store_true', default=False,
+                        help="Whether to use the MUC-7 dataset at test time.For this, \
+                        MUC7.NE.formalrun.sentences.columns.gold needs to be in eval/ner/data/.")
     args = parser.parse_args()
 
     if args.ignore_rel is not None and not args.rel_spec:
@@ -45,8 +52,7 @@ if __name__ == "__main__":
         outdir = args.output_dir
     else:
         sys.exit("Output directory path missing!")
-    #if not "Conll2003" in outdir:
-    #    sys.exit("Output directory probably wrong!")
+
     if not os.path.exists(outdir):
         os.makedirs(outdir)
     #else:
@@ -59,7 +65,7 @@ if __name__ == "__main__":
     #    os.makedirs(outdir)
 
     logger = setup_logging(outdir, logging.DEBUG)
-    """
+
     brown_cluster_file = args.brown_cluster_file
     hmm_rep_path = args.rep_path
     lr = ("_lr_" in hmm_rep_path) if hmm_rep_path is not None else False
@@ -76,14 +82,13 @@ if __name__ == "__main__":
         use_wordrep_rel = False
 
     decoding = args.decoding
-    #decoding = "max_emission"
-    #decoding = "max-product"
+
     # use hmm-based wordrep
     if hmm_rep_path is not None:
         logger.info("Loading corpora. Decoding word representations.")
         hmmrep = PrepareHmmRep(hmm_rep_path, lang="en", decoding=decoding, use_wordrep_tree=use_wordrep_tree,
                                use_wordrep_rel=use_wordrep_rel, eval_spec_rel=args.rel_spec, logger=logger,
-                               ignore_rel=args.ignore_rel, lr=lr)
+                               ignore_rel=args.ignore_rel, lr=lr, use_muc=args.use_muc)
         corpus = hmmrep.ner_corpus
         train_seq = hmmrep.train_seq
         dev_seq = hmmrep.dev_seq
@@ -91,7 +96,7 @@ if __name__ == "__main__":
         muc_seq = hmmrep.muc_seq
     elif args.embed is not None:
         logger.info("Loading embeddings.")
-        embrep = PrepareEmbedRep(embed=args.embed, embed_v=args.embed_v, lang="en")
+        embrep = PrepareEmbedRep(embed=args.embed, embed_v=args.embed_v, lang="en", use_muc=args.use_muc)
         corpus = embrep.ner_corpus
         train_seq = embrep.train_seq
         dev_seq = embrep.dev_seq
@@ -103,11 +108,9 @@ if __name__ == "__main__":
         train_seq = corpus.read_sequence_list_conll(eng_train)
         dev_seq = corpus.read_sequence_list_conll(eng_dev)
         test_seq = corpus.read_sequence_list_conll(eng_test)
-        muc_seq = corpus.read_sequence_list_conll(muc_test)
+        muc_seq = corpus.read_sequence_list_conll(muc_test) if args.use_muc else None
 
     logger.info("Extracting features.")
-    #logger.info("Training on dev !!")
-    #feature_mapper = exfc.ExtendedFeatures(dev_seq)
     feature_mapper = exfc.ExtendedFeatures(train_seq, brown_cluster_file)
     feature_mapper.set_baseline_features()
     # other/wordrep features
@@ -148,13 +151,12 @@ if __name__ == "__main__":
     logger.info("Training./Loading model.")
 
     sp = spc.StructuredPerceptron(corpus.word_dict, corpus.tag_dict, feature_mapper)
-    sp.num_epochs = 20
+    sp.num_epochs = args.n_epochs
     sp.train_supervised(train_seq, dev_seq)
 
     logger.info("Testing on dev.")
     pred_dev = sp.viterbi_decode_corpus(dev_seq)
-    #eval_dev = sp.evaluate_corpus(dev_seq, pred_dev)
-    #logger.info("Devset acc.: {}".format(eval_dev))
+
     logger.info("Writing conll eval format.")
     corpus.write_conll_instances(dev_seq, pred_dev, "{}/dev.txt".format(outdir))
 
@@ -163,17 +165,18 @@ if __name__ == "__main__":
     logger.info("Writing conll eval format.")
     corpus.write_conll_instances(test_seq, pred_test, "{}/test.txt".format(outdir))
 
-    logger.info("Testing on MUC test.")
-    pred_muc = sp.viterbi_decode_corpus(muc_seq)
-    logger.info("Writing conll eval format.")
-    corpus.write_conll_instances(muc_seq, pred_muc, "{}/muc.txt".format(outdir), is_muc=True)
+    if args.use_muc:
+        logger.info("Testing on MUC test.")
+        pred_muc = sp.viterbi_decode_corpus(muc_seq)
+        logger.info("Writing conll eval format.")
+        corpus.write_conll_instances(muc_seq, pred_muc, "{}/muc.txt".format(outdir), is_muc=True)
 
     logger.info("Saving model, writing the settings.")
     with open("{}/setting".format(outdir), "w") as setting_file:
         setting_file.write("Train file: {}\n".format(eng_train))
         setting_file.write("Dev file: {}\n".format(eng_dev))
         setting_file.write("Test file: {}\n".format(eng_test))
-        setting_file.write("MUC test file: {}\n".format(muc_test))
+        setting_file.write("MUC test file: {}\n".format(muc_test if args.use_muc else None))
         setting_file.write("Output directory: {}\n".format(outdir))
         setting_file.write("Loaded model parameters: {}\n".format(sp.loaded_model))
         setting_file.write("Number of features: {}\n".format(feature_mapper.get_num_features()))
@@ -201,36 +204,41 @@ if __name__ == "__main__":
     # Copy this file
     curr_file = os.path.realpath(__file__)
     shutil.copy(curr_file, outdir)
-    """
+
     logger.info("Evaluating with official perl script.")
     # Run Perl evaluation
 
     dev_file = "{}/dev.txt".format(outdir)
     test_file = "{}/test.txt".format(outdir)
-    muc_file = "{}/muc.txt".format(outdir)
+
     eval_script = "conlleval"
     p1_dev = subprocess.Popen(['cat', dev_file], stdout=subprocess.PIPE)
     p1_test = subprocess.Popen(['cat', test_file], stdout=subprocess.PIPE)
-    p1_muc = subprocess.Popen(['cat', muc_file], stdout=subprocess.PIPE)
     p2_dev = subprocess.Popen(["perl", eval_script], stdin=p1_dev.stdout, stdout=subprocess.PIPE)
     p2_test = subprocess.Popen(["perl", eval_script], stdin=p1_test.stdout, stdout=subprocess.PIPE)
-    p2_muc = subprocess.Popen(["perl", eval_script], stdin=p1_muc.stdout, stdout=subprocess.PIPE)
     p1_dev.stdout.close()
     p1_test.stdout.close()
-    p1_muc.stdout.close()
     dev_result = p2_dev.communicate()[0].decode()
     test_result = p2_test.communicate()[0].decode()
-    muc_result = p2_muc.communicate()[0].decode()
+
     with open("{}/dev.result".format(outdir), "w") as dev_out, \
-            open("{}/test.result".format(outdir), "w") as test_out, \
-            open("{}/muc.result".format(outdir), "w") as muc_out:
+            open("{}/test.result".format(outdir), "w") as test_out:
         dev_out.write("{}".format(dev_result))
         test_out.write("{}".format(test_result))
-        muc_out.write("{}".format(muc_result))
+
     # extract f-score
     dev_score = dev_result.split("\n")[1].split(";")[-1].split(" ")[-1]
     test_score = test_result.split("\n")[1].split(";")[-1].split(" ")[-1]
-    muc_score = muc_result.split("\n")[1].split(";")[-1].split(" ")[-1]
     logger.info("F-score dev: {}".format(dev_score))
     logger.info("F-score test: {}".format(test_score))
-    logger.info("F-score MUC test: {}".format(muc_score))
+
+    if args.use_muc:
+        muc_file = "{}/muc.txt".format(outdir)
+        p1_muc = subprocess.Popen(['cat', muc_file], stdout=subprocess.PIPE)
+        p2_muc = subprocess.Popen(["perl", eval_script], stdin=p1_muc.stdout, stdout=subprocess.PIPE)
+        p1_muc.stdout.close()
+        muc_result = p2_muc.communicate()[0].decode()
+        with open("{}/muc.result".format(outdir), "w") as muc_out:
+            muc_out.write("{}".format(muc_result))
+        muc_score = muc_result.split("\n")[1].split(";")[-1].split(" ")[-1]
+        logger.info("F-score MUC test: {}".format(muc_score))
