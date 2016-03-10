@@ -59,7 +59,7 @@ python3.3 run.py --help
 First prepare the data that you plan to use. This will replace unfrequent tokens with \*unk\*:
 
 ```sh
-python3.3 readers/corpus_normalize.py --dataset data/sample.en --output $DATASET --freq_thresh 1
+python3.3 corpus_normalize.py --dataset data/sample.en --output $DATASET --freq_thresh 1
 ```
 
 Then, to train a sequential Hidden Markov model:
