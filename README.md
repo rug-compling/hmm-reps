@@ -73,7 +73,7 @@ This will create an output directory starting with `hmm_...`.
 The following configuration will train the same model, but with the splitting procedure and Brown initialization:
 
 ```sh
-python3.3 run.py --dataset $DATASET --start_n_states 30 --desired_n_states 60 -brown sample.en.64.paths --max_iter 2 --n_proc 1 --approx
+python3.3 run.py --dataset $DATASET --start_n_states 30 --desired_n_states 60 -brown sample.en.30.paths --max_iter 2 --n_proc 1 --approx
 ```
 
 To train a tree model, again start by normalizing the parsed data with \*unk\*:
