@@ -1,8 +1,8 @@
-#Hidden Markov models for word representations
+# Hidden Markov models for word representations
 
 Learn discrete and continuous word representations with Hidden Markov models, including variants defined over unlabeled and labeled parse trees.
 
-(c) Simon Šuster, 2016
+Author: Simon Šuster
 
 If you use this code for any of the tree HMM types, please cite our paper:
 
@@ -10,36 +10,37 @@ If you use this code for any of the tree HMM types, please cite our paper:
  
 
 
-##Features
-###Architectures and training
+## Features
+
+### Architectures and training
 - Sequential HMM trained with the Baum-Welch algorithm. 
 - Tree HMM trained with sum-product message passing (belief propagation)
     - unlabeled
     - labeled (includes syntactic functions as additional observed variables, effectively an Input- Output HMM)
 
-###Training regimes
+### Training regimes
 - Batch EM
 - Online (mini-batch step-wise) EM (Liang and Klein 2009)
 
-###Inference and decoding options
+### Inference and decoding options
 - Viterbi/Max-product message passing
 - Posterior decoding (aka Minimum risk)
 - Posterior distribution with inference
 - Averaged posterior distribution per word type
 - Maximum emission decoding (ignoring transitions)
 
-###Implemented refinements
+### Implemented refinements
 - Approximation of belief vectors (regularization) (Grave et al. 2013)
 - Initialization of model parameters with Brown clusters
 - Splitting and merging of states for progressive introduction of complexity (Petrov et al. 2006)
 
-##Implementation
+## Implementation
 - Logspace approach instead of Rabiner rescaling: a C extension is used for fast log-sum exponent calculation
 - Parallelization on the sentence level
 
 Despite the mentioned, the running time is relatively slow and is especially sensitive to the number of states. A speed-up would be possible through the use of sparse matrices, but at several places the replacement is not trivial. 
 
-##Input format
+## Input format
 - For sequential HMM: plain text, one sentence per line, space-separated tokens
 - For tree HMMs: CoNLL format
 
@@ -107,7 +108,7 @@ This runs an averaged structured perceptron, an adaptation of LXMLS's implementa
 
 See the scripts under [output](output/) for model introspection utilities.
 
-##Requirements
+## Requirements
 - Python3.3 or higher
 - Numpy 1.9 or higher
 - [Fast logsumexp](https://github.com/rmcgibbo/logsumexp) 
